@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: devops
+  labels:
+    app: jenkins
+spec:
+  selector:
+    app: jenkins
+  ports:
+    - name: jenkins
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jenkins
+  namespace: devops
+  labels:
+    app: jenkins
+spec:
+  selector:
+    matchLabels:
+      app: jenkins
+  serviceName: jenkins
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: chaiyd/jenkins:2.249.1
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        ports:
+        - name: jenkins
+          containerPort: 8080
+        - name: jenkins-slave
+          containerPort: 50000
+        env:
+          - name: TZ
+            value: Asia/Shanghai
+        resources:
+          requests:
+            memory: 50M
+          limits:
+            memory: 2Gi
+        volumeMounts:
+          - name: jenkins-disk
+            mountPath: "/var/jenkins_home"
+          - name: docker-sock
+            mountPath: /var/run/docker.sock
+          - name: kubectl
+            mountPath: /usr/bin/kubectl
+      volumes:
+        - name: jenkins-disk
+          persistentVolumeClaim:
+            claimName: jenkins-disk
+        - name: docker-sock
+          hostPath:
+              path: /var/run/docker.sock
+        - name: kubectl
+          hostPath:
+              path: /usr/bin/kubectl

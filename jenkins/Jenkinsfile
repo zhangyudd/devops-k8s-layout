@@ -1,0 +1,81 @@
+pipeline {
+  agent any
+  environment{
+    // 镜像仓库地址
+    def registry = "registry.cn-beijing.aliyuncs.com"
+    // 命名空间
+    def namespace = "bangying"
+    // 镜像仓库项目
+    def project = "dispute-resolution-platform-test"
+    // 镜像完整名称
+    def image_name = "${registry}/${namespace}/${project}:${JOB_NAME}-${BUILD_ID}"
+  }
+  stages{
+    stage('git pull'){
+     // 拉取代码
+	    steps {
+        cleanWs()
+        git branch: 'master', credentialsId: '7367feff-5b10-4c62-b735-6ad0943661cc', url: 'http://47.95.255.128:10080/zhangyu/test.git'
+	    }
+    }
+    stage('mvn build'){ 
+      // mvn构建项目并归档
+      steps {
+	      sh "mvn  validate compile package"
+          step([$class: 'ArtifactArchiver', artifacts: '**/target/*.war', fingerprint: true])
+      }
+	  }
+    stage('docker build'){
+      // 容器打包构建
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'd7d5da51-b51f-4a0f-9419-705605a37c40', passwordVariable: 'password', usernameVariable: 'username')]) {
+        sh """
+          docker build -t ${image_name} ./deploy
+          docker login -u ${username} -p '${password}' ${registry}
+          docker push ${image_name}
+        """
+        // 清理多个镜像
+        sh 'docker images | grep $project | awk \'NR<5{print $1":"$2}\' | xargs docker rmi '
+        }
+      }
+    } 
+    stage('deploy-k8s'){
+      // 远程部署项目    
+        steps {
+          withCredentials([file(credentialsId: '5885e167-507e-46f0-a095-52d08e30f81e',variable:"vault")]) {
+           sh """
+           if [ ! -d ~/.kube ];then
+               mkdir ~/.kube
+            fi
+           echo $vault| xargs cat > ~/.kube/config
+           kubectl apply -f deploy/nginx-deployment-service.yaml
+           """
+          }
+        }
+    } 
+  }
+  post {
+          success {
+              emailext (
+                  subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                  body: """
+				      SUCCESS: '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
+                      "${env.BUILD_URL}" 
+					  """,
+                  to: "edgar.z@foxmail.com",
+                  from: "linuxzhangyu@163.com"
+              )
+          }
+          failure {
+              emailext (
+                  subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+                  body: """
+				      FAILED: '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
+                      "${env.BUILD_URL}" 
+					  """,
+                  to: "edgar.z@foxmail.com",
+                  from: "linuxzhangyu@163.com"
+              )
+          }
+    }
+}

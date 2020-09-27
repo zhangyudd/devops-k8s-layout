@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+  namespace: devops
+  labels:
+    app: mongodb
+spec:
+  selector:
+    app: mongodb
+  ports:
+    - name: mongodb
+      protocol: TCP
+      port: 27017
+      targetPort: 27017
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: devops
+  labels:
+    app: mongodb
+spec:
+  selector:
+    matchLabels:
+      app: mongodb
+  serviceName: mongodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongodb
+    spec:
+      containers:
+      - name: mongodb
+        image: mongo:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - mongod
+          - "--bind_ip"
+          - 0.0.0.0
+        ports:
+        - name: mongodb
+          containerPort: 27017
+        env:
+        - name: TZ
+          value: Asia/Shanghai
+        resources:
+          requests:
+            memory: 50M
+          limits:
+            memory: 2Gi
+        readinessProbe:
+          tcpSocket:
+            port: 27017
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 27017
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+          - name: devops-mongodb-disk
+            mountPath: "/data/db"  
+      volumes:
+        - name: devops-mongodb-disk
+          persistentVolumeClaim:
+            claimName: devops-mongodb-disk

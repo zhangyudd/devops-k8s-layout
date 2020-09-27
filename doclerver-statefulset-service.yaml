@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: doclever
+  namespace: devops
+  labels:
+    app: doclever
+spec:
+  selector:
+    app: doclever
+  ports:
+    - name: doclever
+      protocol: TCP
+      port: 10000
+      targetPort: 10000
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: doclever
+  namespace: devops
+  labels:
+    app: doclever
+spec:
+  selector:
+    matchLabels:
+      app: doclever
+  serviceName: doclever
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: doclever
+    spec:
+      containers:
+      - name: doclever
+        image: lw96/doclever:latest
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DB_HOST
+          value: mongodb://mongodb:27017/DOClever
+        - name: TZ
+          value: Asia/Shanghai
+        ports:
+        - name: doclever
+          containerPort: 10000
+        readinessProbe:
+          tcpSocket:
+            port: 10000
+          initialDelaySeconds: 30
+          periodSeconds: 30
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        livenessProbe:
+          tcpSocket:
+            port: 10000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        volumeMounts:
+          - name: devops-doclerver-disk
+            mountPath: "/root/DOClever/data/file"
+            subPath: doclerver-file
+          - name: devops-doclerver-disk
+            mountPath: "/root/DOClever/data/img"  
+            subPath: doclerver-img
+          - name: devops-doclerver-disk
+            mountPath: /root/DOClever/data/tmp      
+            subPath: doclerver-tmp   
+      volumes:
+        - name: devops-doclerver-disk
+          persistentVolumeClaim:
+            claimName: devops-doclerver-disk
