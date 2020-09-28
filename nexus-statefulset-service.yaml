@@ -49,7 +49,7 @@ spec:
           requests:
             memory: 50M
           limits:
-            memory: 2Gi
+            memory: 2000M
         volumeMounts:
         - name: nexus-data
           mountPath: /nexus-data
