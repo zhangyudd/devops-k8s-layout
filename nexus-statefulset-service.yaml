@@ -32,6 +32,7 @@ spec:
       labels:
         app: nexus
     spec:
+      nodeName: cn-beijing.172.18.10.133      
       containers:
       - name: nexus
         image: sonatype/nexus3

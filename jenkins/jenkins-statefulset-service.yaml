@@ -32,6 +32,7 @@ spec:
       labels:
         app: jenkins
     spec:
+      nodeName: cn-beijing.172.18.10.133
       containers:
       - name: jenkins
         image: chaiyd/jenkins:2.249.1
@@ -51,7 +52,7 @@ spec:
           requests:
             memory: 50M
           limits:
-            memory: 2Gi
+            memory: 1Gi
         volumeMounts:
           - name: jenkins-disk
             mountPath: "/var/jenkins_home"
