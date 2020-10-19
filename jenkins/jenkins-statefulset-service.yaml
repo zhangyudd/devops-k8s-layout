@@ -32,7 +32,6 @@ spec:
       labels:
         app: jenkins
     spec:
-      nodeName: cn-beijing.172.18.10.133
       containers:
       - name: jenkins
         image: chaiyd/jenkins:2.249.1
