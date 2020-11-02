@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-core
+  namespace: dispute
+  labels:
+    app: service-core
+spec:
+  selector:
+    app: service-core
+  ports:
+    - name: service-core
+      protocol: TCP
+      port: 9001
+      targetPort: 9001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-core
+  namespace: dispute
+  labels:
+    app: service-core
+spec:
+  selector:
+    matchLabels:
+      app: service-core
+  replicas: 2
+  revisionHistoryLimit: 5
+  template:
+    metadata:
+      labels:
+        app: service-core
+    spec:
+      imagePullSecrets:
+        - name: registry-vpc-beijing
+      containers:
+        - name: service-core
+          image: IMAGE_NAME
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: service-core
+              containerPort: 9001
+          env:
+            - name: JVM_OPTS
+              value: "-Xms512m -Xmx1024m"
+            - name: bangying_datasource_password
+              valueFrom:
+                secretKeyRef:
+                  name: bangying-dispute-secret
+                  key: bangying_datasource_password
+            - name: TZ
+              value: Asia/Shanghai
+          resources:
+            requests:
+              memory: 50M
+            limits:
+              memory: 2Gi
+          readinessProbe:
+            tcpSocket:
+              port: 9001
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 9001
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
