@@ -69,10 +69,10 @@ spec:
             successThreshold: 1
             timeoutSeconds: 1
           volumeMounts:
-            - name: grafana-devops-disk
+            - name: grafana-devops
               mountPath: "/var/lib/grafana"
-              subPath: grafana       
+              subPath: grafana-devops-dispute       
       volumes:
-        - name: grafana-devops-disk
+        - name: grafana-devops
           persistentVolumeClaim:
-            claimName: grafana-devops-disk
+            claimName: grafana

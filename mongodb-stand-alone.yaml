@@ -70,7 +70,8 @@ spec:
         volumeMounts:
           - name: devops-mongodb-disk
             mountPath: "/data/db"  
+            subPath: mongo-devops-dispute
       volumes:
         - name: devops-mongodb-disk
           persistentVolumeClaim:
-            claimName: devops-mongodb-disk
+            claimName: mongodb

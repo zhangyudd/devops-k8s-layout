@@ -32,7 +32,7 @@ spec:
       labels:
         app: jenkins
     spec:
-      nodeName: cn-beijing.172.18.10.133      
+      nodeName: cn-beijing.172.30.10.208 
       containers:
       - name: jenkins
         image: chaiyd/jenkins:2.249.1
@@ -54,16 +54,17 @@ spec:
           limits:
             memory: 1Gi
         volumeMounts:
-          - name: jenkins-disk
+          - name: jenkins-pvc
             mountPath: "/var/jenkins_home"
+            subPath: jenkins-devops-dispute
           - name: docker-sock
             mountPath: /var/run/docker.sock
           - name: kubectl
             mountPath: /usr/bin/kubectl
       volumes:
-        - name: jenkins-disk
+        - name: jenkins-pvc
           persistentVolumeClaim:
-            claimName: jenkins-disk
+            claimName: jenkins
         - name: docker-sock
           hostPath:
               path: /var/run/docker.sock

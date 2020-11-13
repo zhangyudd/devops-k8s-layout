@@ -63,14 +63,14 @@ spec:
         volumeMounts:
           - name: devops-doclerver-disk
             mountPath: "/root/DOClever/data/file"
-            subPath: doclerver-file
+            subPath: doclever-devops-dispute/file
           - name: devops-doclerver-disk
             mountPath: "/root/DOClever/data/img"  
-            subPath: doclerver-img
+            subPath: doclever-devops-dispute/img
           - name: devops-doclerver-disk
             mountPath: /root/DOClever/data/tmp      
-            subPath: doclerver-tmp   
+            subPath: doclever-devops-dispute/tmp   
       volumes:
         - name: devops-doclerver-disk
           persistentVolumeClaim:
-            claimName: devops-doclerver-disk
+            claimName: doclever

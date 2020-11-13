@@ -54,8 +54,8 @@ spec:
         volumeMounts:
         - name: nexus-data
           mountPath: /nexus-data
-          subPath: nexus3-devops-disk
+          subPath: nexus3-devops-dispute
       volumes:
         - name: nexus-data
           persistentVolumeClaim:
-            claimName: nexus3-devops-disk
+            claimName: nexus3
