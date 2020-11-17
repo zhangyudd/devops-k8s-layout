@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: mysql-data
+spec:
+  schedule: "41 * * * *"
+  suspend: false
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 100
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: mysql-data
+            image: mysql-client:1
+            securityContext:
+              runAsUser: 0
+            args:
+            - "/bin/sh"
+            - "-c"
+            - 'mysqldump --quick  --single-transaction --skip-add-locks  --compress -u root -proot -h39.107.110.141 -B hexin-ss > /tmp/hexin-ss.sql'
+            volumeMounts:
+            - mountPath: /tmp
+              name: mysql-date
+            - mountPath: /etc/localtime
+              name: time-shanghai
+              readOnly: true
+          volumes:
+          - name: mysql-date
+            hostPath:
+              path: /tmp
+              type: Directory
+          - name: time-shanghai
+            hostPath:
+              path: /usr/share/zoneinfo/Asia/Shanghai

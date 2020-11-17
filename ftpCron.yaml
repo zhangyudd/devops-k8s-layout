@@ -1,0 +1,40 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: cronjob-demo
+spec:
+  schedule: "*/1 * * * *"
+  suspend: false
+  startingDeadlineSeconds: 300
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 100
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: hello
+            image: takkatakka/lftp:alpine
+            securityContext:
+              runAsUser: 0
+            args:
+            - "bin/sh"
+            - "-c"
+            - 'lftp dispute-ftp-test:hq1qShYZA0hN@47.94.81.235:40023 -e "mget /fanyu/20201012/BY2020101206-* && bye" && mv *.tar /tmp/'
+            volumeMounts:
+            - mountPath: /tmp
+              name: ftp-date
+            - mountPath: /etc/localtime
+              name: time-shanghai
+              readOnly: true
+          volumes:
+          - name: ftp-date
+            hostPath:
+              path: /tmp
+              type: Directory
+          - name: time-shanghai
+            hostPath:
+              path: /usr/share/zoneinfo/Asia/Shanghai
