@@ -57,7 +57,8 @@ spec:
             limits:
               memory: 2Gi
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /actuator/health
               port: 9001
             initialDelaySeconds: 30
             periodSeconds: 30
