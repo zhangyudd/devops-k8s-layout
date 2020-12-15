@@ -1,0 +1,16 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: jumpserver-config
+  namespace: devops
+data:
+  SECRET_KEY: "UIBAha***Gn7xBZi" #生成方式： cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 50
+  BOOTSTRAP_TOKEN: "zFav2***aeuPEI" #生成方式： cat /dev/urandom | tr -dc A-Za-z0-9 | head -c 16
+  DB_HOST: "rm-2ze1h7***ncs.com"  #MySQL地址
+  DB_PORT: "1***"  #mysql端口
+  DB_USER: "jumpserver"  #MySQL用户
+  DB_PASSWORD: "9q***zZo7H" #MySQL密码
+  DB_NAME: "jumpserver" #mysql数据库 数据库编码要求 uft8 创建语句：  create database jumpserver default charset 'utf8';
+  #REDIS_HOST: "jumpserver-redis-ibm-redis-ha-dev-master-svc" #redis 地址
+  #REDIS_PORT: "6379" # redis 端口
+  #REDIS_PASSWORD: "aaaaaaaaa" # redis密码。如果没有，可以不写

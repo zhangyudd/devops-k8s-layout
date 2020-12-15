@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: jumpserver
+  name: jumpserver
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jumpserver
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: jumpserver
+    spec:
+      containers:
+      - envFrom:
+        - configMapRef:
+            name: jumpserver-config
+        image: jumpserver/jms_all:v2.4.3
+        imagePullPolicy: IfNotPresent
+        name: jumpserver
+        ports:
+        - containerPort: 2222 #用于ssh client端访问
+          protocol: TCP
+        - containerPort: 80 #用于web端访问
+          protocol: TCP
+        resources: 
+          requests:
+            memory: 10M
+          limits:
+            memory: 2048M
+        # terminationMessagePath: /dev/termination-log
+        # terminationMessagePolicy: File
+        volumeMounts: #保存录像
+        - mountPath: /opt/jumpserver/data/media
+          name: jumpserver-media
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      volumes:
+      - name: jumpserver-media
+        persistentVolumeClaim:
+          claimName: jumpserver-media
