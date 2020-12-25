@@ -1,0 +1,10 @@
+# nginx-ingress 转发tcp端口应用
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-nginx
+# 需要暴露的端口 和 服务,对外端口30000
+data:
+  9527: "default/kuard:9527"
+  
