@@ -11,11 +11,12 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/ngin
 kubectl apply -f ingress-service.yaml
 
 如需要修改nginx-ingress配置参数
-`nginx-config.yaml ` 创建配置文件
+`nginx-config.yaml ` 创建配置文件，配置全局生效
 
 ---
 `nginx-deploy.yaml` 部署nginx应用，包含deployment，service，ingress
 
+annotations配置可以针对某个应用单独配置
 * 保持session
   * 部署文件中配置
     ``` 
