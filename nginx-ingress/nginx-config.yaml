@@ -6,6 +6,23 @@ metadata:
   labels:
     app: ingress-nginx
 data:
-  proxy-body-size: "64m"
-  proxy-read-timeout: "180"
-  proxy-send-timeout: "180"
+  allow-backend-server-header: 'true'
+  enable-underscores-in-headers: 'true'
+  generate-request-id: 'true'
+  ignore-invalid-headers: 'true'
+  log-format-upstream: >-
+    $remote_addr - [$remote_addr] - $remote_user [$time_local] "$request"
+    $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length
+    $request_time [$proxy_upstream_name] $upstream_addr
+    $upstream_response_length $upstream_response_time $upstream_status $req_id
+    $host [$proxy_alternative_upstream_name]
+  max-worker-connections: '65536'
+  proxy-body-size: 20m
+  proxy-connect-timeout: '10'
+  reuse-port: 'true'
+  server-tokens: 'false'
+  ssl-redirect: 'false'
+  upstream-keepalive-timeout: '900'
+  worker-cpu-affinity: auto
+  keep-alive-requests: "10000" #  nginx 与 client 保持的一个长连接能处理的请求数量，默认 100，高并发场景建议调高。
+  upstream-keepalive-connections: "200" # nginx 与 upstream 保持长连接的最大空闲连接数 (不是最大连接数)，默认 32，在高并发下场景下调大，避免频繁建联导致 TIME_WAIT 飙升。
