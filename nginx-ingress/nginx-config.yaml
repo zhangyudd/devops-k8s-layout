@@ -22,7 +22,9 @@ data:
   reuse-port: 'true'
   server-tokens: 'false'
   ssl-redirect: 'false'
-  upstream-keepalive-timeout: '900'
   worker-cpu-affinity: auto
   keep-alive-requests: "10000" #  nginx 与 client 保持的一个长连接能处理的请求数量，默认 100，高并发场景建议调高。
   upstream-keepalive-connections: "200" # nginx 与 upstream 保持长连接的最大空闲连接数 (不是最大连接数)，默认 32，在高并发下场景下调大，避免频繁建联导致 TIME_WAIT 飙升。
+  keep-alive: "60"
+  upstream-keepalive-timeout: '60'
+  upstream-keepalive-requests: "10000"
