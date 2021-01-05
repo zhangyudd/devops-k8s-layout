@@ -16,6 +16,7 @@ data:
     $request_time [$proxy_upstream_name] $upstream_addr
     $upstream_response_length $upstream_response_time $upstream_status $req_id
     $host [$proxy_alternative_upstream_name]
+  access-log-params: buffer=32k flush=1m
   worker-cpu-affinity: auto
   max-worker-connections: '65536'
   proxy-body-size: 20m
