@@ -82,4 +82,4 @@ spec:
       volumes:
         - name: devops-mongodb-disk
           persistentVolumeClaim:
-            claimName: mongodb
+            claimName: mongo
