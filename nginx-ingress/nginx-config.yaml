@@ -16,15 +16,24 @@ data:
     $request_time [$proxy_upstream_name] $upstream_addr
     $upstream_response_length $upstream_response_time $upstream_status $req_id
     $host [$proxy_alternative_upstream_name]
+  worker-cpu-affinity: auto
   max-worker-connections: '65536'
   proxy-body-size: 20m
   proxy-connect-timeout: '10'
+  proxy-read-timeout: '300'
+  proxy-buffer-size: "256k"
   reuse-port: 'true'
   server-tokens: 'false'
-  ssl-redirect: 'false'
-  worker-cpu-affinity: auto
   keep-alive-requests: "10000" #  nginx 与 client 保持的一个长连接能处理的请求数量，默认 100，高并发场景建议调高。
-  upstream-keepalive-connections: "200" # nginx 与 upstream 保持长连接的最大空闲连接数 (不是最大连接数)，默认 32，在高并发下场景下调大，避免频繁建联导致 TIME_WAIT 飙升。
   keep-alive: "60"
+  upstream-keepalive-connections: "200" # nginx 与 upstream 保持长连接的最大空闲连接数 (不是最大连接数)，默认 32，在高并发下场景下调大，避免频繁建联导致 TIME_WAIT 飙升。
   upstream-keepalive-timeout: '60'
   upstream-keepalive-requests: "10000"
+  client-header-buffer-size: "512k"
+  large-client-header-buffers: "4 512k"
+  client-body-buffer-size: "128k"
+  server-name-hash-bucket-size: "128"
+  map-hash-bucket-size: "128"
+  ssl-redirect: 'false'
+  ssl-ciphers: "ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA"
+  ssl-protocols: "TLSv1 TLSv1.1 TLSv1.2"
