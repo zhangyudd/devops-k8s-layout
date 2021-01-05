@@ -32,6 +32,13 @@ spec:
       labels:
         app: grafana
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+              - {key: devops-node, operator: In, values: ["beijing-node"]}
       containers:
         - name: grafana
           image: grafana/grafana:7.1.1

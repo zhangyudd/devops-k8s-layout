@@ -23,6 +23,13 @@ spec:
         k8s.kuboard.cn/layer: monitor
         k8s.kuboard.cn/name: kuboard
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+              - {key: devops-node, operator: In, values: ["beijing-node"]}
       containers:
       - name: kuboard
         image: eipwork/kuboard:latest

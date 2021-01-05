@@ -32,7 +32,13 @@ spec:
       labels:
         app: nexus
     spec:
-      nodeName: cn-beijing.172.30.10.209
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+              - {key: devops-node, operator: In, values: ["beijing-node"]}
       containers:
       - name: nexus
         image: sonatype/nexus3
@@ -46,6 +52,8 @@ spec:
         env:
           - name: TZ
             value: Asia/Shanghai
+          - name: INSTALL4J_ADD_VM_PARAMS
+            value: "-Xms256m -Xmx512m -XX:MaxDirectMemorySize=1024m"
         resources:
           requests:
             memory: 1024M

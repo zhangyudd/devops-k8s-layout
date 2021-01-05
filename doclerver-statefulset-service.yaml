@@ -32,6 +32,13 @@ spec:
       labels:
         app: doclever
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+              - {key: devops-node, operator: In, values: ["beijing-node"]}
       containers:
       - name: doclever
         image: lw96/doclever:latest

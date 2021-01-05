@@ -32,7 +32,13 @@ spec:
       labels:
         app: jenkins
     spec:
-      nodeName: cn-beijing.172.30.10.208 
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 60
+            preference:
+              matchExpressions:
+              - {key: devops-node, operator: In, values: ["beijing-node"]}
       containers:
       - name: jenkins
         image: chaiyd/jenkins:2.249.1
