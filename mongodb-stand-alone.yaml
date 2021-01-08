@@ -56,9 +56,9 @@ spec:
           value: Asia/Shanghai
         resources:
           requests:
-            memory: 50M
+            memory: 150M
           limits:
-            memory: 2Gi
+            memory: 1Gi
         readinessProbe:
           tcpSocket:
             port: 27017

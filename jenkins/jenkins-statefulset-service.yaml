@@ -56,7 +56,7 @@ spec:
             value: Asia/Shanghai
         resources:
           requests:
-            memory: 50M
+            memory: 300M
           limits:
             memory: 3Gi
         volumeMounts:

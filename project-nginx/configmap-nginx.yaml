@@ -24,7 +24,8 @@ data:
     {
         include       mime.types;
         default_type  text/html;
-        access_log  /var/log/nginx/access.log;
+        log_format  main  '$remote_addr - [$http_x_real_ip] - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" $request_length $request_time  $upstream_addr $upstream_response_length $upstream_response_time $upstream_status $host';
+        access_log  /var/log/nginx/access.log main;
 
         sendfile    on;  # 减少切换次数和拷贝次数
         tcp_nopush on; # 告诉nginx在一个数据包里发送所有头文件

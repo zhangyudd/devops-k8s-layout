@@ -51,6 +51,11 @@ spec:
         ports:
         - name: doclever
           containerPort: 10000
+        resources:
+          requests:
+            memory: 100M
+          limits:
+            memory: 1Gi
         readinessProbe:
           tcpSocket:
             port: 10000

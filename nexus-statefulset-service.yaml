@@ -56,7 +56,7 @@ spec:
             value: "-Xms256m -Xmx512m -XX:MaxDirectMemorySize=1024m"
         resources:
           requests:
-            memory: 1024M
+            memory: 500M
           limits:
             memory: 2000M
         volumeMounts:
