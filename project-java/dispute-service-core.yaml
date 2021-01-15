@@ -46,16 +46,9 @@ spec:
           ports:
             - name: service-core
               containerPort: 9001
-          env:
-            - name: JVM_OPTS
-              value: "-Xms512m -Xmx1024m"
-            - name: bangying_datasource_password
-              valueFrom:
-                secretKeyRef:
-                  name: bangying-dispute-secret
-                  key: bangying_datasource_password
-            - name: TZ
-              value: Asia/Shanghai
+          envFrom:
+            - configMapRef:
+                name: service-core-env
           resources:
             requests:
               memory: 50M
