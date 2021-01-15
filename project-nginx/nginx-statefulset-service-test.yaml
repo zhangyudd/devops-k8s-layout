@@ -27,6 +27,11 @@ spec:
       app: nginx
   serviceName: nginx
   replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
   template:
     metadata:
       labels:

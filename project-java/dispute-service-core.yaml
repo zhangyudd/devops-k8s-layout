@@ -26,6 +26,11 @@ spec:
     matchLabels:
       app: service-core
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
   revisionHistoryLimit: 5
   template:
     metadata:
