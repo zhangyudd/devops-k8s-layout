@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-service
+  namespace: kube-public
+  labels:
+    app: rabbitmq
+spec:
+  ports:
+    - name: mangement
+      protocol: TCP
+      port: 15672
+    - name: smp 
+      protocol: TCP
+      port: 5672
+  selector:
+    app: rabbitmq
