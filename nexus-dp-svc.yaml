@@ -15,7 +15,7 @@ spec:
       targetPort: 8081
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: nexus
   namespace: devops
@@ -25,8 +25,12 @@ spec:
   selector:
     matchLabels:
       app: nexus
-  serviceName: nexus
   replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   template:
     metadata:
       labels:

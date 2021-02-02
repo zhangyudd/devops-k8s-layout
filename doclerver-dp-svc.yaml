@@ -15,7 +15,7 @@ spec:
       targetPort: 10000
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: doclever
   namespace: devops
@@ -25,7 +25,11 @@ spec:
   selector:
     matchLabels:
       app: doclever
-  serviceName: doclever
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
   replicas: 1
   template:
     metadata:
@@ -55,23 +59,7 @@ spec:
           requests:
             memory: 100M
           limits:
-            memory: 1Gi
-        readinessProbe:
-          tcpSocket:
-            port: 10000
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        livenessProbe:
-          tcpSocket:
-            port: 10000
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
+            memory: 500M
         volumeMounts:
           - name: devops-doclerver-disk
             mountPath: "/root/DOClever/data/file"

@@ -4,9 +4,9 @@
     git clone https://github.com/llmgo/redis-sts.git
 
 ## 部署redis集群
-    * 修改对应的namespaces，pvc，配置文件
-    * kubectl apply -f .
-    * 查看集群pod状态
+  1. 修改对应的namespaces，pvc，配置文件
+  2. kubectl apply -f .
+  3. 查看集群pod状态
 
 ## 执行集群初始化
     kubectl exec -it redis-cluster-0 -- redis-cli --cluster create --cluster-replicas 1 $(kubectl get pods -l app=redis-cluster -o jsonpath='{range.items[*]}{.status.podIP}:6379 '| awk -F ' :' '{print $1}')

@@ -15,7 +15,7 @@ spec:
       targetPort: 3000
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: grafana
   namespace: devops
@@ -25,7 +25,6 @@ spec:
   selector:
     matchLabels:
       app: grafana
-  serviceName: grafana
   replicas: 1
   template:
     metadata:
