@@ -15,7 +15,7 @@ spec:
       targetPort: 8080
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: jenkins
   namespace: devops
@@ -25,7 +25,6 @@ spec:
   selector:
     matchLabels:
       app: jenkins
-  serviceName: jenkins
   strategy:
     rollingUpdate:
       maxSurge: 25%
