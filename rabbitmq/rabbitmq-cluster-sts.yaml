@@ -8,11 +8,6 @@ spec:
     matchLabels:
       app: rabbitmq
   serviceName: rabbitmq
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   replicas: 3
   template:
     metadata:

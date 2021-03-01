@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skywalking-ui
+  namespace: devops
+  labels:
+    app: skywalking-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: skywalking-ui
+  template:
+    metadata:
+      labels:
+        app: skywalking-ui
+    spec:
+      nodeSelector:
+       nodetype: wedesign
+      containers:
+        - name: skywalking-ui
+          image: apache/skywalking-ui:6.6.0
+          ports:
+            - containerPort: 8080
+              name: page
+          env:
+            - name: SW_OAP_ADDRESS
+              value: oap:12800
+          resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: skywalking-ui
+  namespace: devops
+  labels:
+    service: skywalking-ui
+spec:
+  ports:
+    - port: 8080
+      name: page
+      nodePort: 31008
+  type: NodePort
+  selector:
+    app: skywalking-ui

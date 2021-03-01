@@ -1,0 +1,16 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: letsencrypt-prod #这里是issuer的名称，后面要使用
+  namespace: devops
+spec:
+  acme:
+    # 邮箱，证书过期前会发邮件到这个邮箱
+    email: edgar.z@foxmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

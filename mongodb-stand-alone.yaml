@@ -26,11 +26,6 @@ spec:
     matchLabels:
       app: mongodb
   serviceName: mongodb
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
   replicas: 1
   template:
     metadata:

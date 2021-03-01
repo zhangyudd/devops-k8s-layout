@@ -269,6 +269,7 @@ spec:
               exec:
                 command:
                   - /wait-shutdown
+          resources: {}
       initContainers:
       - name: setsysctl
         image: busybox
