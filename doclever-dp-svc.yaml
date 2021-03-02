@@ -1,4 +1,29 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: devops-doclever-pv
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /doclever-devops-dispute/
+    server: xxxxx.cn-beijing.nas.aliyuncs.com       # ----replace------
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: devops
+  name: devops-doclever-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: doclever
@@ -63,14 +88,14 @@ spec:
         volumeMounts:
           - name: devops-doclerver-disk
             mountPath: "/root/DOClever/data/file"
-            subPath: doclever-devops-dispute/file
+            subPath: file
           - name: devops-doclerver-disk
             mountPath: "/root/DOClever/data/img"  
-            subPath: doclever-devops-dispute/img
+            subPath: img
           - name: devops-doclerver-disk
             mountPath: /root/DOClever/data/tmp      
-            subPath: doclever-devops-dispute/tmp   
+            subPath: tmp   
       volumes:
         - name: devops-doclerver-disk
           persistentVolumeClaim:
-            claimName: doclever
+            claimName: devops-doclever-pvc

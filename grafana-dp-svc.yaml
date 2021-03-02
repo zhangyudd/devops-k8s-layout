@@ -1,4 +1,29 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: devops-grafana-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /grafana-devops-dispute/
+    server: xxxxxxxx.cn-beijing.nas.aliyuncs.com       # ----replace------
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: devops
+  name: devops-grafana-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: grafana
@@ -82,8 +107,8 @@ spec:
           volumeMounts:
             - name: grafana-devops
               mountPath: "/var/lib/grafana"
-              subPath: grafana-devops-dispute       
+              #subPath: grafana-devops-dispute       
       volumes:
         - name: grafana-devops
           persistentVolumeClaim:
-            claimName: grafana
+            claimName: devops-grafana-pvc

@@ -1,4 +1,29 @@
 apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: devops-mongodb-pv
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteMany
+  nfs:
+    path: /mongo-devops-dispute/
+    server: xxxxxx.cn-beijing.nas.aliyuncs.com       # ----replace------
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  namespace: devops
+  name: devops-mongodb-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Gi
+---
+apiVersion: v1
 kind: Service
 metadata:
   name: mongodb
@@ -78,8 +103,8 @@ spec:
         volumeMounts:
           - name: devops-mongodb-disk
             mountPath: "/data/db"  
-            subPath: mongo-devops-dispute
+            #subPath: mongo-devops-dispute
       volumes:
         - name: devops-mongodb-disk
           persistentVolumeClaim:
-            claimName: mongo
+            claimName: devops-mongodb-pvc

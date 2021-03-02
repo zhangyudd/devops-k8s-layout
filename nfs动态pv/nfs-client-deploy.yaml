@@ -32,6 +32,8 @@ spec:
               value: 192.168.209.128
             - name: NFS_PATH
               value: /data/nfsDir
+          resources:
+            {}
       volumes:
         - name: nfs-client-root
           nfs:
