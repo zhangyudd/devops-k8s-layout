@@ -5,6 +5,10 @@ metadata:
   namespace: dispute
   labels:
     app: service-core
+  annotations:
+    prometheus.io/http-probe: "true"
+    prometheus.io/http-probe-port: "9001"
+    prometheus.io/http-probe-path: "/actuator/health"
 spec:
   selector:
     app: service-core
