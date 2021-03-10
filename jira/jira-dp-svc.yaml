@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jira
+  name: jira-svc
+  namespace: devops
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+  selector:
+    app: jira
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: jira
+  name: jira
+  namespace: devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jira
+  serviceName: jira-svc
+  template:
+    metadata:
+      labels:
+        app: jira
+      name: jira
+    spec:
+      containers:
+      - name: jira
+        image: haxqer/jira:8.11.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1500M"
+            cpu: "100m"
+          limits:
+            memory: "4Gi"
+            cpu: "2000m"
+        volumeMounts:
+        - name: jira-home
+          mountPath: /var/atlassian/jira	#jira数据目录
+      volumes:
+        - name: jira-home
+          persistentVolumeClaim:
+            claimName: devops-jira-pvc
+
