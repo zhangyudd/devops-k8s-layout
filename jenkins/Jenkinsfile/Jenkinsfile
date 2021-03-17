@@ -10,7 +10,7 @@ pipeline {
     // 镜像完整名称
     def image_name = "${registry}/${namespace}/${project}:${JOB_NAME}-${BUILD_ID}"
   }
-  stages{
+  stages {
     stage('git pull'){
      // 拉取代码
 	    steps {

@@ -39,3 +39,10 @@
 
     service account:
     jenkins
+
+    节点选择器:
+    
+
+    工作空间卷:
+    pvc
+
