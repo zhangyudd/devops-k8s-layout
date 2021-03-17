@@ -1,29 +1,4 @@
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: devops-jenkins-pv
-spec:
-  capacity:
-    storage: 50Gi
-  accessModes:
-    - ReadWriteMany
-  nfs:
-    path: /jenkins-devops-dispute/
-    server: xxxxxxx.cn-beijing.nas.aliyuncs.com       # ----replace------
----
-kind: PersistentVolumeClaim
-apiVersion: v1
-metadata:
-  namespace: devops
-  name: devops-jenkins-pvc
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 50Gi
----
-apiVersion: v1
 kind: Service
 metadata:
   name: jenkins
@@ -81,13 +56,28 @@ spec:
         - name: jenkins-slave
           containerPort: 50000
         env:
-          - name: TZ
-            value: Asia/Shanghai
+          - name: JAVA_OPTS
+            value: -Xmx2048m -XshowSettings:vm -Dhudson.slaves.NodeProvisioner.initialDelay=0 -Dhudson.slaves.NodeProvisioner.MARGIN=50 -Dhudson.slaves.NodeProvisioner.MARGIN0=0.85 -Duser.timezone=Asia/Shanghai
         resources:
           requests:
             memory: 300M
           limits:
-            memory: 3Gi
+            cpu: 1000m
+            memory: 2Gi
+        livenessProbe:
+          httpGet:
+            path: /login
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+          failureThreshold: 12
+        readinessProbe:
+          httpGet:
+            path: /login
+            port: 8080
+          initialDelaySeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 12
         volumeMounts:
           - name: jenkins-pvc
             mountPath: "/var/jenkins_home"

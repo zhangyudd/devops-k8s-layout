@@ -2,6 +2,11 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: managed-nfs-storage
+# mountOptions:    # 据说是阿里云nfs存在问题配置，未测试过
+# - noresvport
+# - vers=3
 provisioner: fuseim.pri/ifs # or choose another name, must match deployment's env PROVISIONER_NAME'
 parameters:
   archiveOnDelete: "false"    # 策略再被回收删除时，是否打包
+reclaimPolicy: Retain    # 默认为Delete 
+volumeBindingMode: Immediate

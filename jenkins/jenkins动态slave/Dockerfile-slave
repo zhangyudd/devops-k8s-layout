@@ -1,0 +1,44 @@
+FROM zhangyudd/openjdk8-alpine:jdk8-maven3.6
+
+LABEL maintainer="Jenkins Docker Maintainers <edgar.z@foxmail.com>"
+
+ARG user=jenkins
+ARG group=jenkins
+# ARG uid=1000
+# ARG gid=1000
+ARG JENKINS_SLAVE_HOME=/var/jenkins_home
+ARG JENKINS_SLAVE_VERSION=4.7
+
+RUN apk add --no-cache \
+  bash \
+  coreutils \
+  curl \
+  git \
+  git-lfs \
+  openssh-client \
+  tini \
+  ttf-dejavu \
+  tzdata \
+  unzip \
+  npm \
+  docker 
+
+RUN mkdir -p $JENKINS_SLAVE_HOME 
+#  && chown ${uid}:${gid} $JENKINS_SLAVE_HOME \
+#  && addgroup -g ${gid} ${group} \
+#  && adduser -h "$JENKINS_SLAVE_HOME" -u ${uid} -G ${group} -s /bin/bash -D ${user}
+
+COPY jenkins-agent /usr/local/bin/jenkins-slave
+ARG JENKINS_SLAVE_URL=https://repo.jenkins-ci.org/public/org/jenkins-ci/main/remoting/${JENKINS_SLAVE_VERSION}/remoting-${JENKINS_SLAVE_VERSION}.jar
+RUN curl --create-dirs -sSLo /usr/share/jenkins/agent.jar ${JENKINS_SLAVE_URL} \
+	&& chmod 755 /usr/share/jenkins \
+	&& chmod 644 /usr/share/jenkins/agent.jar \
+	&& chmod a+x /usr/local/bin/jenkins-slave
+
+RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
+# USER ${user}
+
+VOLUME $JENKINS_SLAVE_HOME
+WORKDIR $JENKINS_SLAVE_HOME
+
+ENTRYPOINT ["jenkins-slave"]
