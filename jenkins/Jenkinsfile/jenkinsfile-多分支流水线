@@ -8,6 +8,7 @@ pipeline {
     gitlab(triggerOnPush: true, triggerOnMergeRequest: false, branchFilterType: "NameBasedFilter", includeBranchesSpec: "test")
   }
 
+  // 多分支构建参数
   parameters {
      choice(name: 'NODE', choices: ['mmp'], description: 'slave节点：mmp: maven npm环境')
      choice(name: 'ENV_TYPE', choices: ['dev', 'test'], description: '部署环境： dev：开发环境；test：测试环境')
@@ -15,23 +16,24 @@ pipeline {
      gitParameter(name: 'BRANCH_TAG', type: 'PT_BRANCH_TAG', defaultValue: 'master', branchFilter: '',selectedValue: 'DEFAULT', useRepository: "${params.PROJECT_URL}", sortMode: 'DESCENDING_SMART', description: '选择要项目的分支或Tag')
   }
   
+  // 环境变量
   environment{
     // 镜像仓库地址
     def registry = "registry.cn-beijing.aliyuncs.com"
-    // 命名空间
-    def namespace = "bangyingpingtai"
+    // 镜像仓库命名空间
+    def namespace = "pingtai"
     // 镜像仓库项目
-    def project = "arbitration-core-test"
+    def project = "core-test"
     // 镜像完整名称
     def image_name = "${registry}/${namespace}/${project}:${JOB_NAME}-${BUILD_ID}"
     // jenkins中配置的 git 仓库密钥
-    def git_key = '7367feff-5b10-4c62-b735-6ad0943661cc'
+    def git_key = 'xxxxx-xxxxxxx-xxxx-xxxxc'
   	// jenkins中配置的 docker 仓库密钥（dockerfile上传到项目仓库）
-    def dockerhub_key = '7367feff-5b10-4c62-b735-6ad0943661cc'	
+    def dockerhub_key = 'xxxxx-xxxxxxx-xxxx-xxxxc'	
 	  // jenkins中配置的k8s连接config
-    def k8s_config = '7367feff-5b10-4c62-b735-6ad0943661cc'		
+    def k8s_config = 'xxxxx-xxxxxxx-xxxx-xxxxc'		
 	  // k8s 部署文件名（部署文件上传到项目仓库）
-	  def dp_file = 'arbitration-core-test-dp.yaml'
+	  def dp_file = 'core-test-dp.yaml'
   } 
   
   agent{
