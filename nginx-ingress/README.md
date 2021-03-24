@@ -146,3 +146,14 @@ spec:
           serviceName: demo-svc
           servicePort: 8080
 ```
+### 开启waf
+1. 需要在nginx-ingress配置中开启modsecurity
+2. 在需要开启得ingress中，annation中配置：
+``` 
+    nginx.ingress.kubernetes.io/enable-modsecurity: "true"
+    nginx.ingress.kubernetes.io/enable-owasp-core-rules: "true"
+    nginx.ingress.kubernetes.io/modsecurity-transaction-id: "$request_id"
+    nginx.ingress.kubernetes.io/modsecurity-snippet: |
+        SecRuleEngine On
+        SecDebugLog /tmp/modsec_debug.log
+```

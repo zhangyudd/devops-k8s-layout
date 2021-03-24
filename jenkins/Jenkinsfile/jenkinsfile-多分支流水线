@@ -1,13 +1,5 @@
 pipeline {
 
-  // gitlab 触发器钩子
-  // triggers { 
-  // gitlab( triggerOnPush: true, triggerOnMergeRequest: false, triggerOpenMergeRequestOnPush: "never", triggerOnNoteRequest: true, noteRegex: "Jenkins please retry a build", skipWorkInProgressMergeRequest: true, ciSkip: false, setBuildDescription: true, addNoteOnMergeRequest: true, addCiMessage: true, addVoteOnMergeRequest: true, acceptMergeRequestOnSuccess: false, branchFilterType: "NameBasedFilter", includeBranchesSpec: "release/qat", excludeBranchesSpec: "", pendingBuildName: "Jenkins", cancelPendingBuildsOnUpdate: false, secretToken: "abcdefghijklmnopqrstuvwxyz0123456789ABCDEF") 
-  // }
-  triggers {
-    gitlab(triggerOnPush: true, triggerOnMergeRequest: false, branchFilterType: "NameBasedFilter", includeBranchesSpec: "test")
-  }
-
   // 多分支构建参数
   parameters {
      choice(name: 'NODE', choices: ['mmp'], description: 'slave节点：mmp: maven npm环境')
@@ -15,7 +7,12 @@ pipeline {
      string(name: 'PROJECT_URL',defaultValue: 'https://gitee.com/zhangyudd/aliyun-interface.git', description: '项目仓库地址')
      gitParameter(name: 'BRANCH_TAG', type: 'PT_BRANCH_TAG', defaultValue: 'master', branchFilter: '',selectedValue: 'DEFAULT', useRepository: "${params.PROJECT_URL}", sortMode: 'DESCENDING_SMART', description: '选择要项目的分支或Tag')
   }
-  
+
+  agent{
+    label "${params.NODE}"   
+    // agent any
+  }
+
   // 环境变量
   environment{
     // 镜像仓库地址
@@ -35,10 +32,13 @@ pipeline {
 	  // k8s 部署文件名（部署文件上传到项目仓库）
 	  def dp_file = 'core-test-dp.yaml'
   } 
-  
-  agent{
-    label "$NODE"   
-    // agent any
+
+  // gitlab 触发器钩子
+  // triggers { 
+  // gitlab( triggerOnPush: true, triggerOnMergeRequest: false, triggerOpenMergeRequestOnPush: "never", triggerOnNoteRequest: true, noteRegex: "Jenkins please retry a build", skipWorkInProgressMergeRequest: true, ciSkip: false, setBuildDescription: true, addNoteOnMergeRequest: true, addCiMessage: true, addVoteOnMergeRequest: true, acceptMergeRequestOnSuccess: false, branchFilterType: "NameBasedFilter", includeBranchesSpec: "release/qat", excludeBranchesSpec: "", pendingBuildName: "Jenkins", cancelPendingBuildsOnUpdate: false, secretToken: "abcdefghijklmnopqrstuvwxyz0123456789ABCDEF") 
+  // }
+  triggers {
+    gitlab(triggerOnPush: true, triggerOnMergeRequest: false, branchFilterType: "NameBasedFilter", includeBranchesSpec: "test")
   }
 
   stages {
@@ -55,11 +55,14 @@ pipeline {
     stage('git pull') {
       failFast true  // 所有并行阶段中的某个失败的时候，中止其他阶段
       steps {
-        sh '''
-        [ -n "${BRANCH_TAG}" ] || { echo -e "branch或tag：${BRANCH_TAG} 不存在或为空，请检查输入的branch或tag!" && exit 11; }
-        '''
+        sh """
+          [ -n "${params.BRANCH_TAG}" ] || { echo -e "branch ${params.BRANCH_TAG} not found" && exit 11; }
+        """
+        script{
+          BRANCH_TAG = sh(returnStdout: true,script: "echo ${params.BRANCH_TAG}|awk -F '/' '{print \$NF}'").trim()
+        }
         cleanWs()
-        git branch: "$BRANCH_TAG", credentialsId: "${git_key}", url: "${PROJECT_URL}"
+        git branch: "${params.BRANCH_TAG}", credentialsId: "${git_key}", url: "${params.PROJECT_URL}"
      }
     }
     stage('docker build'){

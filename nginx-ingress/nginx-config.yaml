@@ -41,3 +41,5 @@ data:
   ssl_buffer_size: "4k"
   ssl_session_cache: "shared:SSL:50m"
   ssl_session_timeout: "4h" 
+  enable-modsecurity: 'true'
+  enable-owasp-modsecurity-crs: 'true'

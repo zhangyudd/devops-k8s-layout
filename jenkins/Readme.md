@@ -11,6 +11,8 @@
 
   Role-based Authorization Strategy 权限管理
 
+  Generic Webhook Trigger 仓库jenkins触发器
+
 插件安装慢，无法连接解决方案：
 
     初始化完成后，修改里面得更新中心地址，删除pod，完成重启，安装插件
