@@ -15,7 +15,7 @@ pipeline {
         description: '部署环境： dev：开发环境；test：测试环境')
 
     string(name: 'PROJECT_URL',
-        defaultValue: 'https://gitee.com/zhangyudd/aliyun-interface.git', 
+        defaultValue: 'https://gitee.com/zhangyudd/test-0325.git', 
         description: '项目仓库地址')
 
     gitParameter name: 'BRANCH_TAG', 
@@ -51,44 +51,38 @@ pipeline {
 
 	  // jenkins中配置的k8s连接config
     def k8s_config = 'xxxxx-xxxxxxx-xxxx-xxxxc'		
-
+    
 	  // k8s 部署文件名（部署文件上传到项目仓库）
 	  def dp_file = 'core-test-dp.yaml'
   } 
 
-  // gitlab 触发器钩子
-  // triggers { 
-  // gitlab( triggerOnPush: true, triggerOnMergeRequest: false, triggerOpenMergeRequestOnPush: "never", triggerOnNoteRequest: true, noteRegex: "Jenkins please retry a build", skipWorkInProgressMergeRequest: true, ciSkip: false, setBuildDescription: true, addNoteOnMergeRequest: true, addCiMessage: true, addVoteOnMergeRequest: true, acceptMergeRequestOnSuccess: false, branchFilterType: "NameBasedFilter", includeBranchesSpec: "release/qat", excludeBranchesSpec: "", pendingBuildName: "Jenkins", cancelPendingBuildsOnUpdate: false, secretToken: "abcdefghijklmnopqrstuvwxyz0123456789ABCDEF") 
-  // }
-  triggers {
-    gitlab(triggerOnPush: true, triggerOnMergeRequest: false, branchFilterType: "NameBasedFilter", includeBranchesSpec: "test")
-  }
-
   stages {
     stage('参数输出') {
      steps {
-       sh '''
+       sh """
 	     echo "项目名称 ${params.PROJECT_NAME}"
-       echo "构建node ${params.NODE}"
+         echo "构建node ${params.NODE}"
 	     echo "部署环境 ${params.ENV_TYPE}"
-       echo "项目仓库 ${params.PROJECT_URL} 项目分支 ${params.BRANCH_TAG}"
+         echo "项目仓库 ${params.PROJECT_URL} 项目分支 ${params.BRANCH_TAG}"
 	     echo "docker镜像名 ${image_name}"
-       '''
+       """
      }
     }
+	
     stage('git pull') {
-      failFast true  // 所有并行阶段中的某个失败的时候，中止其他阶段
+      // failFast true  // 所有并行阶段中的某个失败的时候，中止其他阶段
       steps {
-        sh """
-          [ -n "${params.BRANCH_TAG}" ] || { echo -e "branch ${params.BRANCH_TAG} not found" && exit 11; }
-        """
+        // sh """
+        //   [ -n "${params.BRANCH_TAG}" ] || { echo -e "branch ${params.BRANCH_TAG} not found" && exit 11; }
+        // """
         script{
           BRANCH_TAG = sh(returnStdout: true,script: "echo ${params.BRANCH_TAG}|awk -F '/' '{print \$NF}'").trim()
         }
         cleanWs()
-        git branch: "${params.BRANCH_TAG}", credentialsId: "${git_key}", url: "${params.PROJECT_URL}"
+        git branch: "${params.BRANCH_TAG}",url: "${params.PROJECT_URL}"
      }
     }
+	
     stage('docker build'){
       // 容器打包构建
       steps {
@@ -102,36 +96,32 @@ pipeline {
         // sh 'docker images | grep $project | awk \'NR<5{print $1":"$2}\' | xargs docker rmi '
         }
       }
-    }
-    stage('deploy-k8s'){
-      // 远程部署项目    
-        steps {
-          withCredentials([file(credentialsId: "k8s_config",variable:"vault")]) {
-           sh """
-           if [ ! -d ~/.kube ];then
-               mkdir ~/.kube
-            fi
-           echo $vault| xargs cat > ~/.kube/config
-		   sed -i 's@IMAGE_NAME@${image_name}@g' ${dp_file}
-           kubectl apply -f ${dp_file}
-           """
-          }
-      }
-    } 	
+    }	
+	
+	stage('build'){
+       parallel {
+	     stage('deploy test'){
+		   when {
+			   expression { BRANCH_TAG ==~ /(test)/ }
+		   }
+		   steps{
+		     sh """
+		     echo "test"
+		     """
+		   }
+		 }
+	     stage('deploy pro'){
+		   when {
+			   expression { BRANCH_TAG ==~ /(pro)/ }
+		   }
+		   steps{
+		     sh """
+		     echo "pro"
+		     """
+		   }
+		 }		 
+	   }
+	}
   }
-
-  post {
-          failure {
-              emailext (
-                  subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                  body: """
-				      FAILED: '${env.JOB_NAME} [${env.BUILD_NUMBER}]':
-                      "${env.BUILD_URL}" 
-					  """,
-                  to: "edgar.z@foxmail.com",
-                  from: "linuxzhangyu@163.com"
-              )
-          }
-      }
 
 }
